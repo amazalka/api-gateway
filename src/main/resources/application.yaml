@@ -1,6 +1,5 @@
 server:
   port: ${SERVER_PORT:8082}
-
 spring:
   application:
     name: api-gateway
@@ -28,10 +27,31 @@ spring:
               predicates:
                 - Path=/api/v1/flow-manager/files/*/status
                 - Method=GET
-
+      default-filters:
+        - TokenRelay
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: api-gateway
+            client-secret: 0ciHShfTx2cys8I8Rdv7ZgIqIw5aM711
+            authorization-grant-type: authorization_code
+            scope:
+              - openid
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8081/realms/conversion
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/realms/conversion
 eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
   instance:
     instance-id: ${spring.application.name}:${random.value}
+logging:
+  level:
+    org.springframework.security: TRACE
